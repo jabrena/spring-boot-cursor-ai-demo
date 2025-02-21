@@ -24,17 +24,48 @@
             text-align: center;
             color: #333;
         }
+        .pagination {
+            text-align: center;
+            margin: 20px;
+        }
+        .pagination a {
+            color: black;
+            padding: 8px 16px;
+            text-decoration: none;
+            transition: background-color .3s;
+            border: 1px solid #ddd;
+            margin: 0 4px;
+        }
+        .pagination a.active {
+            background-color: #4CAF50;
+            color: white;
+            border: 1px solid #4CAF50;
+        }
+        .pagination a:hover:not(.active) {
+            background-color: #ddd;
+        }
+        .page-info {
+            text-align: center;
+            margin: 10px;
+            color: #666;
+        }
+        .pagination-ellipsis {
+            margin: 0 4px;
+        }
+        .pagination .pagination-ellipsis {
+            padding: 8px 16px;
+            color: #666;
+        }
     </style>
 </head>
 <body>
-    <h1>First 10 Actors</h1>
+    <h1>Actors List</h1>
     <table>
         <thead>
             <tr>
                 <th>ID</th>
                 <th>First Name</th>
                 <th>Last Name</th>
-                <th>Last Update</th>
             </tr>
         </thead>
         <tbody>
@@ -42,9 +73,38 @@
                 <td th:text="${actor.id}"></td>
                 <td th:text="${actor.firstName}"></td>
                 <td th:text="${actor.lastName}"></td>
-                <td th:text="${actor.lastUpdate}"></td>
             </tr>
         </tbody>
     </table>
+    
+    <div class="page-info">
+        Page <span th:text="${currentPage + 1}">1</span> of <span th:text="${totalPages}">1</span>
+    </div>
+    
+    <div class="pagination">
+        <!-- First and Previous -->
+        <a th:if="${currentPage > 0}" th:href="@{/actors(page=0)}">&laquo; First</a>
+        <a th:if="${currentPage > 0}" th:href="@{/actors(page=${currentPage - 1})}">Previous</a>
+        
+        <!-- Page numbers -->
+        <a th:each="i : ${#numbers.sequence(currentPage, endPage)}"
+           th:href="@{/actors(page=${i})}"
+           th:text="${i + 1}"
+           th:class="${currentPage == i} ? 'active' : ''">
+        </a>
+        
+        <!-- If there are more pages after the displayed range -->
+        <span th:if="${endPage < totalPages - 1}" class="pagination-ellipsis">...</span>
+        
+        <!-- Last page (if not in range) -->
+        <a th:if="${endPage < totalPages - 1}" 
+           th:href="@{/actors(page=${totalPages - 1})}"
+           th:text="${totalPages}">
+        </a>
+        
+        <!-- Next and Last -->
+        <a th:if="${currentPage < totalPages - 1}" th:href="@{/actors(page=${currentPage + 1})}">Next</a>
+        <a th:if="${currentPage < totalPages - 1}" th:href="@{/actors(page=${totalPages - 1})}">Last &raquo;</a>
+    </div>
 </body>
 </html> 
